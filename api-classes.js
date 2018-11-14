@@ -5,16 +5,12 @@ class StoryList {
     this.stories = stories;
   }
   static getStories(cb) {
-    // fetch stories from API
-    let settings = {
-      async: true,
-      crossDomain: true,
-      url: `${BASE_URL}/stories`,
-      method: 'GET',
-      headers: {}
-    };
-    $.ajax(settings).done(function(response) {
-      let storyList = new StoryList(response);
+    $.getJSON(`${BASE_URL}/stories`, function(response) {
+      const stories = response.stories.map(function(story) {
+        const { username, title, author, url, storyId } = story;
+        return new Story(username, title, author, url, storyId);
+      });
+      const storyList = new StoryList(stories);
       return cb(storyList);
     });
   }
@@ -28,6 +24,59 @@ class User {
     this.loginToken = loginToken;
     this.favorites = favorites;
     this.ownStories = ownStories;
+  }
+  static create(username, password, name, cb) {
+    let settings = {
+      async: true,
+      crossDomain: true,
+      url: `${BASE_URL}/signup`,
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      processData: false,
+      data: `{"user": {"name": "${name}","username": "${username}","password": "${password}"}}`
+    };
+    $.ajax(settings).done(function(newUser) {
+      return cb(newUser);
+    });
+  }
+  login(cb) {
+    let settings = {
+      async: true,
+      crossDomain: true,
+      url: `${BASE_URL}/signuplogin`,
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json'
+      },
+      processData: false,
+      data: `{"user": {"username": "${this.username}","password": "${
+        this.password
+      }"}}`
+    };
+    $.ajax(settings).done(function(response) {
+      this.loginToken = response.token;
+      return cb(response);
+    });
+  }
+  retrieveDetails(cb) {
+    let settings = {
+      async: true,
+      crossDomain: true,
+      url: `${BASE_URL}/${this.username}`,
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json'
+      },
+      processData: false,
+      data: `{"token": "${this.token}"}`
+    };
+    $.ajax(settings).done(function(response) {
+      this.favorites = response.user.favorites;
+      this.ownStories = response.user.ownStories;
+      return cb(response);
+    });
   }
 }
 
