@@ -26,7 +26,7 @@ class StoryList {
         newStory.author
       }", "title": "${newStory.title}", "url": "${newStory.url}" } }`
     };
-    $.ajax(settings).done(function(response) {
+    $.ajax(settings).success(function(response) {
       let { author, title, url, username, storyId } = response.story;
       let newStory = new Story(username, title, author, url, storyId);
       // Adds the newly created story to the user's story array
@@ -44,7 +44,7 @@ class StoryList {
       },
       data: `{"token": "${user.loginToken}"}`
     };
-    $.ajax(settings).done(function(response) {
+    $.ajax(settings).success(response => {
       let storyIndex = this.stories.findIndex(story => story.storyId === id);
       // Removes a story from the user's object array
       this.stories.splice(storyIndex, 1);
@@ -72,7 +72,7 @@ class User {
       },
       data: `{"user": {"name": "${name}","username": "${username}","password": "${password}"}}`
     };
-    $.ajax(settings).done(function(response) {
+    $.ajax(settings).success(function(response) {
       // Returns the created User instance
       let { username, name } = response.user;
       let newUser = new User(username, password, name);
@@ -90,7 +90,7 @@ class User {
         this.password
       }"}}`
     };
-    $.ajax(settings).done(function(response) {
+    $.ajax(settings).success(response => {
       // Returns the user object with a new token value from the server
       this.loginToken = response.token;
       return cb(this);
@@ -105,7 +105,7 @@ class User {
       },
       data: `{"token": "${this.loginToken}"}`
     };
-    $.ajax(settings).done(function(response) {
+    $.ajax(settings).success(response => {
       // Returns the user object with updated keys.
       this.name = response.user.name;
       this.favorites = response.user.favorites;
@@ -122,7 +122,7 @@ class User {
       },
       data: `{"token": "${this.loginToken}"}`
     };
-    $.ajax(settings).done(function(response) {
+    $.ajax(settings).success(response => {
       // uses a POST method to add a favorite to the user server entry,
       // then syncs with the local user data object
       this.retrieveDetails(() => cb(this));
@@ -137,7 +137,7 @@ class User {
       },
       data: `{"token": "${this.loginToken}"}`
     };
-    $.ajax(settings).done(function(response) {
+    $.ajax(settings).success(response => {
       // uses a DELETE method to remove a favorite from the user's favorites array,
       // then syncs with the server
       this.retrieveDetails(() => cb(this));
@@ -152,5 +152,20 @@ class Story {
     this.url = url;
     this.username = username;
     this.storyId = storyId;
+  }
+
+  update(user, data, cb) {
+    let settings = {
+      url: `${BASE_URL}/stories/`,
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: `{"token": "${user.loginToken}"}`
+    };
+    $.ajax(settings).success(response => {
+      // Updates the story instance with the new data values.
+      return cb(this);
+    });
   }
 }
