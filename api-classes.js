@@ -5,13 +5,13 @@ class StoryList {
     this.stories = stories;
   }
   static getStories(cb) {
-    // Returns a StoryList instance with an array that contains Story instances, one for each story in the api
     $.getJSON(`${BASE_URL}/stories`, function(response) {
       const stories = response.stories.map(function(story) {
         const { username, title, author, url, storyId } = story;
         return new Story(username, title, author, url, storyId);
       });
       const storyList = new StoryList(stories);
+      // Returns a StoryList instance with an array that contains Story instances, one for each story in the api
       return cb(storyList);
     });
   }
@@ -213,11 +213,11 @@ class Story {
     $.ajax(settings).success(response => {
       // response.story contains the specific key values (author, title, url, etc)
       // Updates the story instance with the new data values.
-      // Return the specific local Story instance (this).
       let responseStoryInstance = response.story;
       for (let entry of responseStoryInstance) {
         this[entry] = responseStoryInstance[entry];
       }
+      // Return the specific local Story instance (this).
       return cb(this);
     });
   }
