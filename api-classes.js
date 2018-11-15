@@ -31,7 +31,7 @@ class StoryList {
       let newStory = new Story(username, title, author, url, storyId);
       // Adds the newly created story to the user's story array
       this.stories.push(newStory);
-      // Syncs the user's data object with the server's entry for the user.
+      // Syncs the user's local data object with the server's user.
       user.retrieveDetails(() => cb(newStory));
     });
   }
@@ -48,21 +48,22 @@ class StoryList {
       let storyIndex = this.stories.findIndex(story => story.storyId === id);
       // Removes a story from the user's object array
       this.stories.splice(storyIndex, 1);
-      // Syncs with server
+      // Updates the local copy (this) with the server
       user.retrieveDetails(() => cb(this));
     });
   }
 }
 
 class User {
-  constructor(username, password, name) {
+  constructor(username, password, name, token = '') {
     this.username = username;
     this.password = password;
     this.name = name;
-    this.loginToken = '';
+    this.loginToken = token;
     this.favorites = [];
     this.ownStories = [];
   }
+
   static create(username, password, name, cb) {
     let settings = {
       url: `${BASE_URL}/signup`,
@@ -75,10 +76,12 @@ class User {
     $.ajax(settings).success(function(response) {
       // Returns the created User instance
       let { username, name } = response.user;
-      let newUser = new User(username, password, name);
+      let newUser = new User(username, password, name, response.token);
+      localStorage.setItem('tokenJWT', response.token);
       return cb(newUser);
     });
   }
+
   login(cb) {
     let settings = {
       url: `${BASE_URL}/signuplogin`,
@@ -91,11 +94,13 @@ class User {
       }"}}`
     };
     $.ajax(settings).success(response => {
-      // Returns the user object with a new token value from the server
+      // Returns the user object (this) with a new token value from the server
+      localStorage.setItem('tokenJWT', response.token);
       this.loginToken = response.token;
       return cb(this);
     });
   }
+
   retrieveDetails(cb) {
     let settings = {
       url: `${BASE_URL}/${this.username}`,
@@ -110,9 +115,17 @@ class User {
       this.name = response.user.name;
       this.favorites = response.user.favorites;
       this.ownStories = response.user.stories;
+
+      // Copies the ENTIRE response object onto the local copy.
+      // let responseUserInstance = response.user;
+      // for (let entry of responseUserInstance) {
+      //   this[entry] = responseUserInstance[entry];
+      // }
+      // returns the cb with the user object (this) as the first parameter
       return cb(this);
     });
   }
+
   addFavorite(id, cb) {
     let settings = {
       url: `${BASE_URL}/users/${this.username}/favorites/${id}`,
@@ -124,10 +137,11 @@ class User {
     };
     $.ajax(settings).success(response => {
       // uses a POST method to add a favorite to the user server entry,
-      // then syncs with the local user data object
+      // then syncs with the local user data object (this).
       this.retrieveDetails(() => cb(this));
     });
   }
+
   removeFavorite(id, cb) {
     let settings = {
       url: `${BASE_URL}/users/${this.username}/favorites/${id}`,
@@ -139,8 +153,41 @@ class User {
     };
     $.ajax(settings).success(response => {
       // uses a DELETE method to remove a favorite from the user's favorites array,
-      // then syncs with the server
+      // Updates the local copy of User (this).
       this.retrieveDetails(() => cb(this));
+    });
+  }
+
+  update(userData, cb) {
+    let settings = {
+      url: `${BASE_URL}/users/${this.username}`,
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: `{"token": "${this.loginToken}"}`
+    };
+    $.ajax(settings).success(response => {
+      // Uses PATCH to update the server copy of User instance.
+      // response is the updated user object. response.user gives access to the keys
+      // Requests the server copy of User instance and copies the keys onto the local copy (this).
+      this.retrieveDetails(() => cb(this));
+    });
+  }
+
+  remove(cb) {
+    let settings = {
+      url: `${BASE_URL}/users/${this.username}`,
+      method: 'DELETE',
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: `{"token": "${this.loginToken}"}`
+    };
+    $.ajax(settings).success(response => {
+      // Makes a request to the server to delete the user.
+      // response is the deleted user data, which gets passed to the callback.
+      cb(response);
     });
   }
 }
@@ -164,7 +211,13 @@ class Story {
       data: `{"token": "${user.loginToken}"}`
     };
     $.ajax(settings).success(response => {
+      // response.story contains the specific key values (author, title, url, etc)
       // Updates the story instance with the new data values.
+      // Return the specific local Story instance (this).
+      let responseStoryInstance = response.story;
+      for (let entry of responseStoryInstance) {
+        this[entry] = responseStoryInstance[entry];
+      }
       return cb(this);
     });
   }
