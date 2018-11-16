@@ -138,6 +138,7 @@ $(function() {
     localUser = newUser;
     //Hides the login menu and enables logged in features
     $login.trigger('click');
+
     toggleLoginElements();
   }
 

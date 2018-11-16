@@ -22,9 +22,14 @@ class StoryList {
       headers: {
         'content-type': 'application/json'
       },
-      data: `{"token": "${user.loginToken}", "story": {"author": "${
-        newStory.author
-      }", "title": "${newStory.title}", "url": "${newStory.url}" } }`
+      data: {
+        token: user.loginToken,
+        story: {
+          author: newStory.author,
+          title: newStory.title,
+          url: newStory.url
+        }
+      }
     };
     $.ajax(settings).done(function(response) {
       let { author, title, url, username, storyId } = response.story;
@@ -39,10 +44,7 @@ class StoryList {
     let settings = {
       url: `${BASE_URL}/stories/${id}`,
       method: 'DELETE',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: `{"token": "${user.loginToken}"}`
+      data: { token: user.loginToken }
     };
     $.ajax(settings).done(response => {
       let storyIndex = this.stories.findIndex(story => story.storyId === id);
@@ -68,9 +70,6 @@ class User {
     let settings = {
       url: `${BASE_URL}/signup`,
       method: 'POST',
-      // headers: {
-      //   'content-type': 'application/json'
-      // },
       data: { user: { name: name, username: username, password: password } }
     };
     $.ajax(settings).done(function(response) {
@@ -87,10 +86,7 @@ class User {
     let settings = {
       url: `${BASE_URL}/login`,
       method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: `{ user: { username: ${username}, password: ${password} } }`
+      data: { user: { username: username, password: password } }
     };
     $.ajax(settings).done(response => {
       // Returns the user object (this) with a new token value from the server
@@ -106,10 +102,7 @@ class User {
     let settings = {
       url: `${BASE_URL}/${this.username}`,
       method: 'GET',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: `{"token": "${this.loginToken}"}`
+      data: { token: this.loginToken }
     };
     $.ajax(settings).done(response => {
       // Returns the user object with updated keys.
@@ -131,10 +124,7 @@ class User {
     let settings = {
       url: `${BASE_URL}/users/${this.username}/favorites/${id}`,
       method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: `{"token": "${this.loginToken}"}`
+      data: { token: this.loginToken }
     };
     $.ajax(settings).done(response => {
       // uses a POST method to add a favorite to the user server entry,
@@ -147,10 +137,7 @@ class User {
     let settings = {
       url: `${BASE_URL}/users/${this.username}/favorites/${id}`,
       method: 'DELETE',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: `{"token": "${this.loginToken}"}`
+      data: { token: this.loginToken }
     };
     $.ajax(settings).done(response => {
       // uses a DELETE method to remove a favorite from the user's favorites array,
@@ -163,10 +150,7 @@ class User {
     let settings = {
       url: `${BASE_URL}/users/${this.username}`,
       method: 'PATCH',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: `{"token": "${this.loginToken}"}`
+      data: { token: this.loginToken }
     };
     $.ajax(settings).done(response => {
       // Uses PATCH to update the server copy of User instance.
@@ -180,10 +164,7 @@ class User {
     let settings = {
       url: `${BASE_URL}/users/${this.username}`,
       method: 'DELETE',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: `{"token": "${this.loginToken}"}`
+      data: { token: this.loginToken }
     };
     $.ajax(settings).done(response => {
       // Makes a request to the server to delete the user.
@@ -206,10 +187,7 @@ class Story {
     let settings = {
       url: `${BASE_URL}/stories/`,
       method: 'PATCH',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: `{"token": "${user.loginToken}"}`
+      data: { token: user.loginToken }
     };
     $.ajax(settings).done(response => {
       // response.story contains the specific key values (author, title, url, etc)
