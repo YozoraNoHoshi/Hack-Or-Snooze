@@ -47,13 +47,11 @@ $(function() {
     $loginForm.slideToggle();
   });
 
-  $deleteMenu.on('click', function(e) {
-    e.preventDefault();
+  $deleteMenu.on('click', function() {
     $deleteForm.slideToggle();
   });
 
-  $switchLoginForm.on('click', function(e) {
-    e.preventDefault();
+  $switchLoginForm.on('click', function() {
     if ($switchLoginForm.text() === 'new user') {
       $switchLoginForm.text('login here');
       $loginButton.text('register');
@@ -66,8 +64,7 @@ $(function() {
 
   // ICON SWITCHING
   // These event listeners handle switching icons.
-  $resetDelete.on('click', function(e) {
-    e.preventDefault();
+  $resetDelete.on('click', function() {
     //.far = unselected, .fas is selected
     $('.fa-trash-alt')
       .addClass('far')
@@ -75,78 +72,100 @@ $(function() {
   });
 
   $stories.on('click', '.far, .fas', function(e) {
-    $(e.target).toggleClass('far fas');
+    // on clicking the star, add item to favorites and switch the icon
+    let $e = $(e.target);
+    // find the story's id from the id attribute on the dom element
+    let id = $e.parent().attr('id');
+
+    // If star is filled in
+    if ($e.hasClass('fas')) {
+      //Ping the server to add a favorite
+      localUser.addFavorite(id, function() {
+        // Once the server sends a response, switch the icon
+        $e.toggleClass('far fas');
+      });
+    } else {
+      //Ping the server to add a favorite
+      localUser.removeFavorite(id, function() {
+        // Once the server sends a response, switch the icon
+        $e.toggleClass('far fas');
+      });
+    }
   });
 
   // ADDING / DELETING STORIES
-
   $deleteButton.on('click', function(e) {
     e.preventDefault();
-    // NEEDS SERVER INTERACTIONS FOR REMOVING A STORY
-    // Call remove story on their id, using their id stored in the attr "id"
-    // Removes selected elements from the DOM, then hides the delete form again.
-    $stories
-      .children('li')
-      .filter(function(i, el) {
-        return $(el)
-          .children('.fa-trash-alt')
-          .hasClass('fas');
-      })
-      .remove();
-    $deleteForm.slideToggle();
+    // Get a list of all stories with a filled in delete button
+    let $elementList = $stories.children('li').filter(function(i, el) {
+      return $(el)
+        .child('.fa-trash-alt')
+        .hasClass('fas');
+    });
+    // For each element in the list:
+    $elementList.each(function(i, ele) {
+      // Call remove story on their id, using their id stored in the attr "id"
+      let id = $(ele).attr('id');
+      storyList.removeStory(localUser, id, function() {
+        // Once the server sends a response, remove the element from the DOM.
+        $(ele).remove();
+      });
+    });
+    // Hides the delete menu
+    $deleteMenu.trigger('click');
   });
 
-  // On submitting a new story, add new story to the homepage
-  // NEEDS: ADD SERVER INTERACTION
-  // SHOULD CALL storyList.addStory(localUser, OBJ, cb)
-  // WHERE OBJ is an object literal with keys { title = $title.val(), url = $url.val, author = localUser.username }
-  // CB is a callback with one parameter 'response', response is an array containing all stories.
-  // Not sure if the callback needs to do anything
   $newForm.on('submit', function(e) {
     e.preventDefault();
-
-    appendNewStory($title.val(), $url.val());
+    let storyData = {
+      title: $title.val(),
+      author: localUser.username,
+      url: $url.val()
+    };
+    storyList.addStory(localUser, storyData, function() {
+      // Once server responds, add a new story to the DOM.
+      appendNewStory($title.val(), $url.val());
+    });
+    // Hides the submit menu and empties the fields.
     $submit.trigger('click');
     $title.val('');
     $url.val('');
   });
 
   // LOGIN / LOGOUT FEATURES
+  function logIn(newUser) {
+    // On server response, set localUser = the response from the server, a user object
+    localUser = newUser;
+    //Hides the login menu and enables logged in features
+    $login.trigger('click');
+    toggleLoginElements();
+  }
+
   $loginForm.on('submit', function(e) {
     e.preventDefault();
-
     let $username = $('#username').val();
     let $name = $('#your-name').val();
     let $password = $('#password').val();
 
     if ($loginButton.text() === 'register') {
-      User.create($username, $password, $name, function(newUser) {
-        localUser = newUser;
-        $loginForm.slideToggle();
-        toggleLoginElements();
-      });
+      // Creates a new user
+      User.create($username, $password, $name, logIn());
     } else {
-      User.login($username, $password, function(newUser) {
-        localUser = newUser;
-        $loginForm.slideToggle();
-        toggleLoginElements();
-      });
+      User.login($username, $password, logIn());
     }
   });
 
-  $logout.on('click', function(e) {
-    e.preventDefault();
-
+  $logout.on('click', function() {
+    // Delete local storage items and the localUser variable. Hides logged in features
     localStorage.removeItem('tokenJWT');
     localStorage.removeItem('usernameJWT');
     toggleLoginElements();
     localUser = undefined;
   });
-  // END LOGIN/LOGOUT FEATURES
 
   // FILTERING STORIES
-  // on clicking the small hostname, hide all different hostnames
   $stories.on('click', 'small', function(e) {
+    // on clicking the small hostname, hide all different hostnames
     let currentHostname = $(e.target).text();
     $stories
       .children('li')
@@ -158,14 +177,14 @@ $(function() {
         );
       })
       .hide();
-
     $stories.addClass('hide-numbers');
     $clearFilter.show();
     $favorites.text('all');
   });
 
-  $favorites.on('click', function(e) {
-    e.preventDefault();
+  $favorites.on('click', function() {
+    // on clicking the favorite button, hide all non favorites and show all favorites
+    // also, transform favorite button into "all". Future clicks will show all items and turn "all" into favorites again.
     if ($favorites.text() === 'favorites') {
       $stories
         .children('li')
@@ -183,20 +202,8 @@ $(function() {
       $favorites.text('favorites');
     }
   });
-  // on clicking the star, add item to favorites and switch the icon
-  // NEEDS: ADD SERVER INTERACTION (ADD TO USER FAVORITES/REMOVE FROM USER FAVORITES)
-  // find the story's id from the id attribute on the dom element
-  // Adds the story id to a favorite object or array stored in local storage
 
   // UNDER THE StoryList.getStories function below:
-  // Call the user.favorite array and
-  // check the user's favorite array for any story on the page,
-  // if the story ids match, then change the star to be filled in.
-  // Note: to save on time efficiency, convert the favorites array to an object with keys being the story ids, then search by key
-  // In this case, value doesnt matter, the key needs to simply exist.
-
-  // on clicking the favorite button, hide all non favorites and show all favorites
-  // also, transform favorite button into "all". Future clicks will show all items and turn "all" into favorites again.
 
   // On loading the window, call the getStoryList method and append the results to the DOM.
   let storyList;
@@ -209,8 +216,7 @@ $(function() {
         currentStory.title,
         currentStory.url,
         currentStory.username,
-        currentStory.storyId,
-        'hidden'
+        currentStory.storyId
       );
     }
     // After stories are rendered, checks local storage for a user. If found, "logs in"
@@ -259,18 +265,25 @@ $(function() {
         localUser = user;
         toggleLoginElements();
       });
-    }
+    } else toggleLoginElements();
   }
 
   function toggleLoginElements() {
     let username = localStorage.getItem('usernameJWT');
     let token = localStorage.getItem('tokenJWT');
+    // If User is "logged in"
     if (username && token) {
       $loginButton.hide();
       $profile.show();
       $logout.show();
       $deleteMenu.show();
       $submit.show();
+      $favorites.show();
+      // Unhides the favorite star on all list elements.
+      $stories
+        .children('li')
+        .children('.fa-star')
+        .removeClass('houdini');
       // Iterates stories whose owners match the current user and unhides the trash can icon.
       $stories
         .children('li')
@@ -279,13 +292,38 @@ $(function() {
         })
         .children('.fa-trash-alt')
         .removeClass('hidden');
+      checkFavorites();
     } else {
-      $loginButton.show();
+      // If user is not "logged in"
       $profile.hide();
       $logout.hide();
       $deleteMenu.hide();
       $submit.hide();
+      $favorites.hide();
+      $loginButton.show();
+      // Hide all delete buttons, favorite icons
       $('.fa-trash-alt').addClass('hidden');
+      $('.fa-star').addClass('houdini');
+      // Removes any filled in favorite stars
+      $('.fa-star')
+        .addClass('far')
+        .removeClass('fas');
     }
+  }
+
+  function checkFavorites() {
+    // If a story id on the page is in the story id of user's favorites
+    let favoriteStoryIds = {};
+    for (let favoriteEntry of localUser.favorites) {
+      favoriteStoryIds[favoriteEntry.storyId] = 1;
+    }
+    // Fill the star in
+    $stories
+      .children('li')
+      .filter(function(i, element) {
+        return favoriteStoryIds[$(element).attr('id')];
+      })
+      .children('.fa-star')
+      .toggleClass('far fas');
   }
 });

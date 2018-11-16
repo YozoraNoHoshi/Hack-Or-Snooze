@@ -34,6 +34,10 @@ body {
   display: none;
 }
 
+.houdini {
+  visibility: hidden;
+}
+
 #stories > li {
   color: #828282;
   padding: 5px 0;
