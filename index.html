@@ -33,12 +33,25 @@
         <a href="javascript:void(0)" class="nav-link" id="login">login</a>
       </li>
       <li class="nav-item">
-        <a href="javascript:void(0)" class="nav-link hidden" id="profile">profile</a>
+        <a href="javascript:void(0)" class="nav-link" id="profile">profile</a>
       </li>
       <li class="nav-item">
-        <a href="javascript:void(0)" class="nav-link hidden" id="logout">logout</a>
+        <a href="javascript:void(0)" class="nav-link" id="logout">logout</a>
       </li>
   </nav>
+
+  <div id="delete-form">
+    <form class="form-horizontal">
+      <div class="form-group row">
+        <div class="pl-4 col-sm-offset-2 col-sm-2">
+          <button type="button" id="delete-button" class="btn btn-danger">DELETE SELECTED</button>
+        </div>
+        <div class="col-sm-offset-2 col-sm-">
+          <button type="button" id="reset-delete" class="btn btn-secondary">Reset Selections</button>
+        </div>
+      </div>
+    </form>
+  </div>
 
   <div id="login-form">
     <form class="form-horizontal">
@@ -52,7 +65,7 @@
       <div class="form-group row" id='name-field'>
         <label for="your-name" class="pl-4 mr-2 col-sm-1 form-label">name</label>
         <div class="col-sm-6">
-          <input required type="text" class="form-control" id="your-name"
+          <input type="text" class="form-control" id="your-name"
                   autocomplete="off">
         </div>
       </div>

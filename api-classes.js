@@ -26,7 +26,7 @@ class StoryList {
         newStory.author
       }", "title": "${newStory.title}", "url": "${newStory.url}" } }`
     };
-    $.ajax(settings).success(function(response) {
+    $.ajax(settings).done(function(response) {
       let { author, title, url, username, storyId } = response.story;
       let newStory = new Story(username, title, author, url, storyId);
       // Adds the newly created story to the user's story array
@@ -44,7 +44,7 @@ class StoryList {
       },
       data: `{"token": "${user.loginToken}"}`
     };
-    $.ajax(settings).success(response => {
+    $.ajax(settings).done(response => {
       let storyIndex = this.stories.findIndex(story => story.storyId === id);
       // Removes a story from the user's object array
       this.stories.splice(storyIndex, 1);
@@ -68,12 +68,12 @@ class User {
     let settings = {
       url: `${BASE_URL}/signup`,
       method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      data: `{"user": {"name": "${name}","username": "${username}","password": "${password}"}}`
+      // headers: {
+      //   'content-type': 'application/json'
+      // },
+      data: { user: { name: name, username: username, password: password } }
     };
-    $.ajax(settings).success(function(response) {
+    $.ajax(settings).done(function(response) {
       // Returns the created User instance
       let { username, name } = response.user;
       let newUser = new User(username, password, name, response.token);
@@ -90,9 +90,9 @@ class User {
       headers: {
         'content-type': 'application/json'
       },
-      data: `{"user": {"username": "${username}","password": "${password}"}}`
+      data: `{ user: { username: ${username}, password: ${password} } }`
     };
-    $.ajax(settings).success(response => {
+    $.ajax(settings).done(response => {
       // Returns the user object (this) with a new token value from the server
       let { username, name } = response.user;
       let newUser = new User(username, password, name, response.token);
@@ -111,7 +111,7 @@ class User {
       },
       data: `{"token": "${this.loginToken}"}`
     };
-    $.ajax(settings).success(response => {
+    $.ajax(settings).done(response => {
       // Returns the user object with updated keys.
       this.name = response.user.name;
       this.favorites = response.user.favorites;
@@ -136,7 +136,7 @@ class User {
       },
       data: `{"token": "${this.loginToken}"}`
     };
-    $.ajax(settings).success(response => {
+    $.ajax(settings).done(response => {
       // uses a POST method to add a favorite to the user server entry,
       // then syncs with the local user data object (this).
       this.retrieveDetails(() => cb(this));
@@ -152,7 +152,7 @@ class User {
       },
       data: `{"token": "${this.loginToken}"}`
     };
-    $.ajax(settings).success(response => {
+    $.ajax(settings).done(response => {
       // uses a DELETE method to remove a favorite from the user's favorites array,
       // Updates the local copy of User (this).
       this.retrieveDetails(() => cb(this));
@@ -168,7 +168,7 @@ class User {
       },
       data: `{"token": "${this.loginToken}"}`
     };
-    $.ajax(settings).success(response => {
+    $.ajax(settings).done(response => {
       // Uses PATCH to update the server copy of User instance.
       // response is the updated user object. response.user gives access to the keys
       // Requests the server copy of User instance and copies the keys onto the local copy (this).
@@ -185,7 +185,7 @@ class User {
       },
       data: `{"token": "${this.loginToken}"}`
     };
-    $.ajax(settings).success(response => {
+    $.ajax(settings).done(response => {
       // Makes a request to the server to delete the user.
       // response is the deleted user data, which gets passed to the callback.
       cb(response);
@@ -211,7 +211,7 @@ class Story {
       },
       data: `{"token": "${user.loginToken}"}`
     };
-    $.ajax(settings).success(response => {
+    $.ajax(settings).done(response => {
       // response.story contains the specific key values (author, title, url, etc)
       // Updates the story instance with the new data values.
       let responseStoryInstance = response.story;

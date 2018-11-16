@@ -22,12 +22,14 @@ body {
 
 #new-form,
 #login-form,
+#delete-form,
 #stories {
   background-color: #f6f6ef;
 }
 
 #new-form,
 #login-form,
+#delete-form,
 .hidden {
   display: none;
 }
@@ -46,6 +48,7 @@ body {
 
 #submit:hover,
 #favorites:hover,
+#delete-story:hover,
 #login:hover {
   text-decoration: underline;
 }
