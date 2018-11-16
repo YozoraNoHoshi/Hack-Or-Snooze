@@ -78,26 +78,27 @@ class User {
       let { username, name } = response.user;
       let newUser = new User(username, password, name, response.token);
       localStorage.setItem('tokenJWT', response.token);
+      localStorage.setItem('usernameJWT', username);
       return cb(newUser);
     });
   }
 
-  login(cb) {
+  static login(username, password, cb) {
     let settings = {
-      url: `${BASE_URL}/signuplogin`,
+      url: `${BASE_URL}/login`,
       method: 'POST',
       headers: {
         'content-type': 'application/json'
       },
-      data: `{"user": {"username": "${this.username}","password": "${
-        this.password
-      }"}}`
+      data: `{"user": {"username": "${username}","password": "${password}"}}`
     };
     $.ajax(settings).success(response => {
       // Returns the user object (this) with a new token value from the server
+      let { username, name } = response.user;
+      let newUser = new User(username, password, name, response.token);
       localStorage.setItem('tokenJWT', response.token);
-      this.loginToken = response.token;
-      return cb(this);
+      localStorage.setItem('usernameJWT', username);
+      return cb(newUser);
     });
   }
 

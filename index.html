@@ -6,13 +6,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <link rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootswatch/4.1.3/united/bootstrap.css">
+  <link rel="stylesheet"
+        href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-  <h1>Open up the chrome console!</h1>
+<body class="container">
+  <nav class="navbar navbar-expand-lg">
+    <span class="navbar-brand">
+      <b>Hack or Snooze</b>
+    </span>
+
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a href="javascript:void(0)" class="nav-link" id="submit">submit</a>
+      </li>
+      <li class="nav-item">
+        <a href="javascript:void(0)" class="nav-link" id="favorites">favorites</a>
+      </li>
+      <li class="nav-item">
+        <a href="javascript:void(0)" class="nav-link" id="delete-story">delete</a>
+      </li>
+      <li class="nav-item">
+        <a href="javascript:void(0)" class="nav-link" id="login">login</a>
+      </li>
+      <li class="nav-item">
+        <a href="javascript:void(0)" class="nav-link hidden" id="profile">profile</a>
+      </li>
+      <li class="nav-item">
+        <a href="javascript:void(0)" class="nav-link hidden" id="logout">logout</a>
+      </li>
+  </nav>
+
+  <div id="login-form">
+    <form class="form-horizontal">
+      <div class="form-group row">
+        <label for="username" class="pl-4 mr-2 col-sm-1 form-label">username</label>
+        <div class="col-sm-6">
+          <input required type="text" class="form-control" id="username"
+                  autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group row" id='name-field'>
+        <label for="your-name" class="pl-4 mr-2 col-sm-1 form-label">name</label>
+        <div class="col-sm-6">
+          <input required type="text" class="form-control" id="your-name"
+                  autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="password" class="pl-4 mr-2 col-sm-1 form-label">password</label>
+        <div class="col-sm-6">
+          <input required type="password" class="form-control" id="password"
+                  autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group d-flex justify-content-center row">
+        <div class="col-sm-offset-2 col-sm-5">
+          <button type="submit" id="login-button" class="btn btn-primary">register</button>
+        </div>
+        <div class="col-sm-offset-2 col-sm-6">
+          <button type="button" id="switch-login-form" class="btn btn-primary">login here</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div id="new-form">
+    <form class="form-horizontal">
+      <div class="form-group row">
+        <label for="title" class="pl-4 col-sm-1 form-label">title</label>
+        <div class="col-sm-6">
+          <input required type="text" class="form-control" id="title"
+                  autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="url" class="pl-4 col-sm-1 form-label">url</label>
+        <div class="col-sm-6">
+          <input required type="url" class="form-control" id="url"
+                  autocomplete="off">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-primary">submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  
+  <ol id="stories"></ol>
+        
   <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
     crossorigin="anonymous"></script>
   <script src="api-classes.js"></script>
-</body>
+  <script src="hacksnooze.js"></script>
+  
 
 </html>
+
