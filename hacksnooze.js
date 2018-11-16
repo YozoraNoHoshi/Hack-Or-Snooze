@@ -150,9 +150,13 @@ $(function() {
 
     if ($loginButton.text() === 'register') {
       // Creates a new user
-      User.create($username, $password, $name, logIn());
+      User.create($username, $password, $name, function(newUser) {
+        logIn(newUser);
+      });
     } else {
-      User.login($username, $password, logIn());
+      User.login($username, $password, function(newUser) {
+        logIn(newUser);
+      });
     }
   });
 
