@@ -50,10 +50,7 @@ body {
   text-decoration: none;
 }
 
-#submit:hover,
-#favorites:hover,
-#delete-story:hover,
-#login:hover {
+.nav-item:hover {
   text-decoration: underline;
 }
 

@@ -19,9 +19,6 @@ class StoryList {
     let settings = {
       method: 'POST',
       url: `${BASE_URL}/stories`,
-      headers: {
-        'content-type': 'application/json'
-      },
       data: {
         token: user.loginToken,
         story: {
@@ -31,11 +28,11 @@ class StoryList {
         }
       }
     };
-    $.ajax(settings).done(function(response) {
+    $.ajax(settings).done(response => {
       let { author, title, url, username, storyId } = response.story;
       let newStory = new Story(username, title, author, url, storyId);
       // Adds the newly created story to the user's story array
-      this.stories.push(newStory);
+      this.stories.unshift(newStory);
       // Syncs the user's local data object with the server's user.
       user.retrieveDetails(() => cb(newStory));
     });

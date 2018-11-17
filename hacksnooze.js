@@ -76,22 +76,26 @@ $(function() {
   $stories.on('click', '.far, .fas', function(e) {
     // on clicking the star, add item to favorites and switch the icon
     let $e = $(e.target);
-    // find the story's id from the id attribute on the dom element
-    let id = $e.parent().attr('id');
+    if ($e.hasClass('fa-star')) {
+      // find the story's id from the id attribute on the dom element
+      let id = $e.parent().attr('id');
 
-    // If star is not filled in
-    if ($e.hasClass('far')) {
-      //Ping the server to add a favorite
-      localUser.addFavorite(id, function() {
-        // Once the server sends a response, switch the icon
-        $e.toggleClass('far fas');
-      });
+      // If star is not filled in
+      if ($e.hasClass('far')) {
+        //Ping the server to add a favorite
+        localUser.addFavorite(id, function() {
+          // Once the server sends a response, switch the icon
+          $e.toggleClass('far fas');
+        });
+      } else {
+        //Ping the server to remove a favorite
+        localUser.removeFavorite(id, function() {
+          // Once the server sends a response, switch the icon
+          $e.toggleClass('far fas');
+        });
+      }
     } else {
-      //Ping the server to remove a favorite
-      localUser.removeFavorite(id, function() {
-        // Once the server sends a response, switch the icon
-        $e.toggleClass('far fas');
-      });
+      $e.toggleClass('far fas');
     }
   });
 
@@ -101,7 +105,7 @@ $(function() {
     // Get a list of all stories with a filled in delete button
     let $elementList = $stories.children('li').filter(function(i, el) {
       return $(el)
-        .child('.fa-trash-alt')
+        .children('.fa-trash-alt')
         .hasClass('fas');
     });
     // For each element in the list:
@@ -127,11 +131,11 @@ $(function() {
     storyList.addStory(localUser, storyData, function() {
       // Once server responds, add a new story to the DOM.
       appendNewStory($title.val(), $url.val());
+      $submit.trigger('click');
+      $title.val('');
+      $url.val('');
     });
     // Hides the submit menu and empties the fields.
-    $submit.trigger('click');
-    $title.val('');
-    $url.val('');
   });
 
   // LOGIN / LOGOUT FEATURES
@@ -154,10 +158,15 @@ $(function() {
       // Creates a new user
       User.create($username, $password, $name, function(newUser) {
         logIn(newUser);
+        $username.val('');
+        $name.val('');
+        $password.val('');
       });
     } else {
       User.login($username, $password, function(newUser) {
         logIn(newUser);
+        $username.val('');
+        $password.val('');
       });
     }
   });
