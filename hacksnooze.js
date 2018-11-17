@@ -246,7 +246,6 @@ $(function() {
       href: url,
       target: '_blank'
     });
-
     // get short hostname: http://foo.bar.baz.com/page.html -> baz.com
     let hostname = $newLink
       .prop('hostname')
@@ -263,9 +262,13 @@ $(function() {
     let $trash = $('<span>', {
       class: `ml-2 far fa-trash-alt hidden`
     });
+    let $author = $('<div>', {
+      class: `storyauthor pl-4`,
+      text: `by: ${username}`
+    });
 
     let $newStory = $('<li>')
-      .append($star, $newLink, $small, $trash)
+      .append($star, $newLink, $small, $trash, $author)
       .attr('data-username', `${username}`)
       .attr('id', `${id}`);
 

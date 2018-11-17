@@ -69,6 +69,14 @@ small {
   text-decoration: underline;
 }
 
+#stories > li {
+  position: relative;
+}
+
+.story-author {
+  /* position: absolute; */
+}
+
 .hide-numbers {
   list-style: none;
 }
