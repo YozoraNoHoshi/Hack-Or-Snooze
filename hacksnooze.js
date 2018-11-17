@@ -1,3 +1,6 @@
+let storyList;
+let localUser;
+
 $(function() {
   // DECLARATION OF A LOT OF CONSTANTS, GROUPED BY GENERAL ASSOCIATION
   const $favorites = $('#favorites');
@@ -22,7 +25,6 @@ $(function() {
   const $switchLoginForm = $('#switch-login-form');
   const $loginButton = $('#login-button');
   const $logout = $('#logout');
-  let localUser;
 
   // BONUS STUFF
 
@@ -77,15 +79,15 @@ $(function() {
     // find the story's id from the id attribute on the dom element
     let id = $e.parent().attr('id');
 
-    // If star is filled in
-    if ($e.hasClass('fas')) {
+    // If star is not filled in
+    if ($e.hasClass('far')) {
       //Ping the server to add a favorite
       localUser.addFavorite(id, function() {
         // Once the server sends a response, switch the icon
         $e.toggleClass('far fas');
       });
     } else {
-      //Ping the server to add a favorite
+      //Ping the server to remove a favorite
       localUser.removeFavorite(id, function() {
         // Once the server sends a response, switch the icon
         $e.toggleClass('far fas');
@@ -211,7 +213,7 @@ $(function() {
   // UNDER THE StoryList.getStories function below:
 
   // On loading the window, call the getStoryList method and append the results to the DOM.
-  let storyList;
+
   StoryList.getStories(response => {
     storyList = response;
     for (let i = 0; i < 25; i++) {
@@ -229,7 +231,7 @@ $(function() {
   });
 
   // MISC FUNCTIONS
-  function appendNewStory(title, url, username = '', id = '', hidden = '') {
+  function appendNewStory(title, url, username = '', id = '') {
     let $newLink = $('<a>', {
       text: ` ${title}`,
       href: url,
@@ -250,7 +252,7 @@ $(function() {
       class: 'far fa-star'
     });
     let $trash = $('<span>', {
-      class: `ml-2 far fa-trash-alt ${hidden}`
+      class: `ml-2 far fa-trash-alt hidden`
     });
 
     let $newStory = $('<li>')
@@ -278,7 +280,7 @@ $(function() {
     let token = localStorage.getItem('tokenJWT');
     // If User is "logged in"
     if (username && token) {
-      $loginButton.hide();
+      $login.hide();
       $profile.show();
       $logout.show();
       $deleteMenu.show();
@@ -305,7 +307,7 @@ $(function() {
       $deleteMenu.hide();
       $submit.hide();
       $favorites.hide();
-      $loginButton.show();
+      $login.show();
       // Hide all delete buttons, favorite icons
       $('.fa-trash-alt').addClass('hidden');
       $('.fa-star').addClass('houdini');

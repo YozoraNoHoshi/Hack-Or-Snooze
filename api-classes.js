@@ -100,7 +100,7 @@ class User {
 
   retrieveDetails(cb) {
     let settings = {
-      url: `${BASE_URL}/${this.username}`,
+      url: `${BASE_URL}/users/${this.username}`,
       method: 'GET',
       data: { token: this.loginToken }
     };
