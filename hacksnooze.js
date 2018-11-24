@@ -292,42 +292,50 @@ $(function() {
     let token = localStorage.getItem('tokenJWT');
     // If User is "logged in"
     if (username && token) {
-      $login.hide();
-      $profile.show();
-      $logout.show();
-      $deleteMenu.show();
-      $submit.show();
-      $favorites.show();
-      // Unhides the favorite star on all list elements.
-      $stories
-        .children('li')
-        .children('.fa-star')
-        .removeClass('houdini');
-      // Iterates stories whose owners match the current user and unhides the trash can icon.
-      $stories
-        .children('li')
-        .filter(function(i, element) {
-          return $(element).attr('data-username') === localUser.username;
-        })
-        .children('.fa-trash-alt')
-        .removeClass('hidden');
+      showLoggedInFeatures();
       checkFavorites();
     } else {
       // If user is not "logged in"
-      $profile.hide();
-      $logout.hide();
-      $deleteMenu.hide();
-      $submit.hide();
-      $favorites.hide();
-      $login.show();
-      // Hide all delete buttons, favorite icons
-      $('.fa-trash-alt').addClass('hidden');
-      $('.fa-star').addClass('houdini');
-      // Removes any filled in favorite stars
-      $('.fa-star')
-        .addClass('far')
-        .removeClass('fas');
+      hideLoggedInFeatures();
     }
+  }
+
+  function showLoggedInFeatures() {
+    $login.hide();
+    $profile.show();
+    $logout.show();
+    $deleteMenu.show();
+    $submit.show();
+    $favorites.show();
+    // Unhides the favorite star on all list elements.
+    $stories
+      .children('li')
+      .children('.fa-star')
+      .removeClass('houdini');
+    // Iterates stories whose owners match the current user and unhides the trash can icon.
+    $stories
+      .children('li')
+      .filter(function(i, element) {
+        return $(element).attr('data-username') === localUser.username;
+      })
+      .children('.fa-trash-alt')
+      .removeClass('hidden');
+  }
+
+  function hideLoggedInFeatures() {
+    $profile.hide();
+    $logout.hide();
+    $deleteMenu.hide();
+    $submit.hide();
+    $favorites.hide();
+    $login.show();
+    // Hide all delete buttons, favorite icons
+    $('.fa-trash-alt').addClass('hidden');
+    $('.fa-star').addClass('houdini');
+    // Removes any filled in favorite stars
+    $('.fa-star')
+      .addClass('far')
+      .removeClass('fas');
   }
 
   function checkFavorites() {
