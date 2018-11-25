@@ -74,8 +74,8 @@ $(function() {
   });
 
   $stories.on('click', '.far, .fas', function(e) {
-    // on clicking the star, add item to favorites and switch the icon
     let $e = $(e.target);
+    // If it is a star element,
     if ($e.hasClass('fa-star')) {
       // find the story's id from the id attribute on the dom element
       let id = $e.parent().attr('id');
@@ -95,6 +95,7 @@ $(function() {
         });
       }
     } else {
+      // Toggle trash can icon
       $e.toggleClass('far fas');
     }
   });
