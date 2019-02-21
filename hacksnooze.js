@@ -269,7 +269,7 @@ $(function() {
     });
 
     let $newStory = $('<li>')
-      .append($star, $newLink, $small, $trash, $author)
+      .prepend($star, $newLink, $small, $trash, $author)
       .attr('data-username', `${username}`)
       .attr('id', `${id}`);
 
