@@ -269,11 +269,11 @@ $(function() {
     });
 
     let $newStory = $('<li>')
-      .prepend($star, $newLink, $small, $trash, $author)
+      .append($star, $newLink, $small, $trash, $author)
       .attr('data-username', `${username}`)
       .attr('id', `${id}`);
 
-    $stories.append($newStory);
+    $stories.prepend($newStory);
   }
 
   function isUserLoggedIn() {
